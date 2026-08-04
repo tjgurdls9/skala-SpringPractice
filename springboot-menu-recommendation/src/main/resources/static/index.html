@@ -97,10 +97,10 @@
     </p>
 
     <div class="buttons">
-        <button class="task" data-task="1" data-url="/api/menu/weather/rainy">① 날씨별 추천</button>
-        <button class="task" data-task="2" data-url="/api/menu/mood/happy">② 기분별 추천</button>
-        <button class="task" data-task="3" data-url="/api/menu/price/search?min=5000&max=10000">③ 가격대별 추천</button>
-        <button class="task" data-task="4" data-url="/api/menu/my/solo">④ 나만의 추천</button>
+        <button class="task" data-task="1">① 날씨별 추천</button>
+        <button class="task" data-task="2">② 기분별 추천</button>
+        <button class="task" data-task="3">③ 가격대별 추천</button>
+        <button class="task" data-task="4">④ 나만의 추천</button>
     </div>
 
     <div id="result">결과가 여기에 표시됩니다.</div>
@@ -108,11 +108,32 @@
 <script>
     const result = document.getElementById("result");
 
+    function pick(candidates) {
+        return candidates[Math.floor(Math.random() * candidates.length)];
+    }
+
+    // 실습과제 버튼(1~4번)은 누를 때마다 이 후보들 중 하나를 무작위로 골라 호출합니다.
+    const taskUrlBuilders = {
+        1: () => `/api/menu/weather/${pick(["sunny", "rainy", "hot", "cold"])}`,
+        2: () => `/api/menu/mood/${pick(["happy", "sad", "tired", "stressed"])}`,
+        3: () => {
+            const range = pick([
+                { min: 0, max: 5000 },
+                { min: 5000, max: 10000 },
+                { min: 10000, max: 20000 },
+            ]);
+            return `/api/menu/price/search?min=${range.min}&max=${range.max}`;
+        },
+        4: () => `/api/menu/my/${pick(["solo", "friends", "family"])}`,
+    };
+
     document.querySelectorAll("button").forEach((button) => {
         button.addEventListener("click", async () => {
             result.textContent = "요청 중...";
 
-            const url = button.dataset.url;
+            const url = taskUrlBuilders[button.dataset.task]
+                ? taskUrlBuilders[button.dataset.task]()
+                : button.dataset.url;
 
             try {
                 const response = await fetch(url);

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 /**
  * 브라우저의 HTTP 요청을 받아 메뉴 추천 결과를 반환한다.
@@ -42,6 +44,31 @@ public class MenuController {
     public String menuByCategory(@PathVariable("category") String category) {
         String menu = menuService.recommendByCategory(category);
         return category + " 추천 메뉴는 " + menu + "입니다.";
+    }
+
+    @GetMapping("/menu/weather/{weather}")
+    public String menuByWeather(@PathVariable("weather") String weather) {
+        String menu = menuService.recommendByWeather(weather);
+        return weather +  "에 어울리는 메뉴는" + menu + "입니다.";
+    }
+    
+
+    @GetMapping("/menu/mood/{mood}")
+    public String menuByMood(@PathVariable("mood") String mood) {
+        String menu = menuService.recommendByMood(mood);
+        return "오늘 기분엔 " + menu + " 어떠세요?";
+    }
+
+    @GetMapping("/menu/price/search")
+    public String menuByPrice(@RequestParam("min") int min, @RequestParam("max") int max) {
+        String menu = menuService.recommendByPrice(min, max);
+        return min + "원~" + max + "원 사이 추천 메뉴는 " + menu + "입니다.";
+    }
+
+    @GetMapping("/menu/my/{companion}")
+    public String menuForMe(@PathVariable("companion") String companion) {
+        String menu = menuService.recommendForMe(companion);
+        return companion + "이라면 " + menu + " 어떠세요?";
     }
 
     @GetMapping("/menu/json/{category}")

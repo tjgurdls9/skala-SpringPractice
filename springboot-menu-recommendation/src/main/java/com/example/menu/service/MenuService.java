@@ -38,8 +38,50 @@ public class MenuService {
         };
     }
 
+    public String recommendByWeather(String whether) {
+        return switch (whether) {
+            case "sunny" -> "타코 플래터";
+            case "rainy" -> "해물파전";
+            case "hot" -> "냉면";
+            case "cold" -> "우동";
+            default -> "추천 가능한 메뉴가 없습니다";
+        };
+    }
+
     public String randomMenu() {
         int index = ThreadLocalRandom.current().nextInt(menus.size());
         return menus.get(index);
+    }
+
+    public String recommendByMood(String mood) {
+        return switch (mood) {
+            case "happy" -> "치킨";
+            case "sad" -> "떡볶이";
+            case "tired" -> "삼계탕";
+            case "stressed" -> "매운 마라탕";
+            default -> "추천 가능한 메뉴가 없습니다";
+        };
+    }
+
+    public String recommendByPrice(int min, int max) {
+        if (min > max) {
+            return "가격 범위가 올바르지 않습니다";
+        }
+        if (max <= 6000) {
+            return "김밥";
+        } else if (max <= 12000) {
+            return "돈가스";
+        } else {
+            return "스테이크 정식";
+        }
+    }
+
+    public String recommendForMe(String companion) {
+        return switch (companion) {
+            case "solo" -> "편의점 도시락";
+            case "friends" -> "치킨과 맥주";
+            case "family" -> "삼겹살 파티";
+            default -> "추천 가능한 메뉴가 없습니다";
+        };
     }
 }
