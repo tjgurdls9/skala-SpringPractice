@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>오늘 뭐 먹지 - 백엔드 2일차 실습 (Spring Boot 메뉴 추천 + Docker화)</title>
+<link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0e1152;
+    --navy-deep: #020408;
+    --ink: #111827;
+    --purple: #6c4dff;
+    --blue: #3f51ff;
+    --teal: #2ee6c9;
+    --tint: #ece6ff;
+    --tint-blue: #e6eaf0;
+    --border: #dfe2ea;
+    --grad: linear-gradient(90deg, #6c4dff 0%, #3f51ff 100%);
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "SUIT", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    font-size: 16.5px;
+    max-width: 980px;
+    margin: 0 auto 40px;
+    padding: 0 24px;
+    line-height: 1.7;
+    color: var(--ink);
+    background: #ffffff;
+  }
+  h1 {
+    font-size: 27px; color: var(--navy);
+    border-bottom: 3px solid var(--navy);
+    padding-bottom: 10px;
+  }
+  h2 { font-size: 21px; margin: 0; padding: 14px 26px; color: #fff; }
+  h3 {
+    font-size: 17px; margin-top: 22px; color: var(--navy);
+    border-bottom: 1px solid var(--border); padding-bottom: 5px;
+  }
+  .meta { border: 1px solid var(--border); border-left: 4px solid var(--navy); padding: 16px 20px; margin: 18px 0; border-radius: 0 10px 10px 0; }
+  .meta dt { font-weight: bold; float: left; width: 118px; clear: left; color: var(--navy); }
+  .meta dd { margin: 0 0 7px 128px; }
+  .toc { border: 1px solid var(--border); border-left: 4px solid var(--purple); padding: 16px 24px; border-radius: 0 10px 10px 0; }
+  .toc strong { color: var(--navy); font-size: 17px; }
+  .toc li { margin: 4px 0; }
+
+  .cover {
+    margin: 0 -24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 70px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow-wrap: break-word;
+  }
+  .cover-tag {
+    display: inline-block; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.28);
+    padding: 7px 18px; border-radius: 100vw; font-size: 13px; letter-spacing: .04em; margin-bottom: 34px;
+    max-width: fit-content;
+  }
+  .cover h1.cover-title { font-size: 62px; line-height: 1.15; font-weight: 800; margin: 0 0 20px; letter-spacing: -1.5px; color: #fff; border-bottom: none; padding-bottom: 0; }
+  .cover-sub { font-size: 26px; opacity: .88; line-height: 1.5; margin: 0 0 30px; }
+  .cover-divider {
+    width: 100%; max-width: 640px; height: 5px; border-radius: 4px;
+    background: linear-gradient(90deg, var(--purple), var(--teal));
+    margin: 0 auto 40px;
+  }
+  .cover-meta {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px 44px;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.18);
+    border-radius: 16px; padding: 28px 32px; width: 100%; max-width: 640px;
+    margin: 0 auto; text-align: center;
+  }
+  .cover-meta div { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .cover-meta span { font-size: 12.5px; opacity: .6; letter-spacing: .04em; }
+  .cover-meta strong { font-size: 16.5px; font-weight: 700; }
+  .cover-foot { margin: 26px auto 0; max-width: 640px; text-align: center; font-size: 13px; opacity: .5; }
+
+  section.question, section.bigsection {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    padding: 0 26px 22px;
+    margin: 0 0 42px;
+    background: #fff;
+  }
+  section.question h2 { background: var(--grad); margin: 0 -26px 20px; }
+  section.bigsection h2 { background: var(--navy); margin: 0 -26px 20px; }
+
+  .req { background: var(--tint); border-left: 4px solid var(--purple); padding: 9px 16px; font-size: 16px; margin: 8px 0 16px; color: var(--navy); border-radius: 0 8px 8px 0; }
+  figure { margin: 12px 0 20px; }
+  figcaption { font-size: 14px; color: #555; margin-top: 5px; }
+  img { max-width: 100%; height: auto; border: 1px solid var(--border); border-radius: 6px; display: block; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 15px; }
+  th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--navy); color: #fff; }
+  tr:nth-child(even) { background: #f8f8fb; }
+  code { background: var(--tint-blue); padding: 1px 6px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 14.5px; color: var(--navy); }
+  pre { background: var(--navy); color: #f2f2f5; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 14.5px; }
+  .note { background: var(--tint-blue); border-left: 4px solid var(--navy); padding: 12px 18px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+  .summary { background: var(--tint); border-left: 4px solid var(--purple); padding: 12px 18px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+  hr.sep { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  @media print {
+    .cover { break-after: page; min-height: 267mm; }
+    section.question, section.bigsection { break-before: page; }
+    section.question:first-of-type { break-before: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="cover-tag">SKALA · SK AI Leader Academy — 백엔드 개발 실습</div>
+  <h1 class="cover-title">오늘 뭐 먹지?</h1>
+  <p class="cover-sub">Spring Boot 메뉴 추천 API 실습<br>실습과제 구현 · 자체 개선 · Docker 컨테이너화 리포트</p>
+  <div class="cover-divider"></div>
+  <div class="cover-meta">
+    <div><span>과목</span><strong>백엔드 2일차 실습</strong></div>
+    <div><span>작성자</span><strong>서혁인</strong></div>
+    <div><span>작성일</span><strong>2026-08-04</strong></div>
+    <div><span>프로젝트</span><strong>springboot-menu-recommendation</strong></div>
+    <div><span>실행 환경</span><strong>Spring Boot 3.5.16 / JDK 21 / Docker</strong></div>
+    <div><span>제출 형식</span><strong>GitHub 저장소 (skala-SpringPractice)</strong></div>
+  </div>
+  <div class="cover-foot">본 문서는 로컬 터미널 + Docker Desktop 환경에서 직접 빌드/실행/검증한 결과를 기반으로 작성되었습니다.</div>
+</section>
+
+<h1>오늘 뭐 먹지? — Spring Boot 메뉴 추천 실습 보고서</h1>
+
+<div class="meta">
+  <dl>
+    <dt>프로젝트</dt><dd>springboot-menu-recommendation (GitHub: tjgurdls9/skala-SpringPractice)</dd>
+    <dt>과제 내용</dt><dd>기존에 구현된 기본 메뉴 추천 기능 위에, 날씨별/기분별/가격대별/나만의 추천 4개 API를 직접 구현하고, 프로젝트 루트에 Dockerfile을 작성해 컨테이너로 빌드/실행</dd>
+    <dt>제출 조건</dt><dd>평가 X, 제출 O</dd>
+    <dt>사용 기술</dt><dd>Spring Boot, Gradle, Docker(멀티스테이지 빌드), Docker Scout</dd>
+    <dt>작성자</dt><dd>서혁인</dd>
+  </dl>
+</div>
+
+<div class="toc">
+  <strong>목차</strong>
+  <ol>
+    <li>기존에 구현되어 있던 기능</li>
+    <li>실습과제로 직접 구현한 API (4개)</li>
+    <li>나만의 차별화 포인트 (직접 개선한 부분)</li>
+    <li>Docker 빌드 &amp; 실행 검증</li>
+    <li>Docker Scout 취약점 개선 (Before / After)</li>
+  </ol>
+</div>
+
+<hr class="sep">
+
+<section class="bigsection">
+<h2>1. 기존에 구현되어 있던 기능</h2>
+<div class="req">실습 시작 시점에 이미 만들어져 있던, Component Scan / 생성자 주입 / @RestController 학습용 API</div>
+
+<table>
+  <thead><tr><th>API</th><th>설명</th></tr></thead>
+  <tbody>
+    <tr><td><code>GET /api/hello/{name}</code></td><td>이름을 받아 인사말 반환</td></tr>
+    <tr><td><code>GET /api/menu</code></td><td>고정된 기본 추천</td></tr>
+    <tr><td><code>GET /api/menu/random</code></td><td>메뉴 목록 중 무작위 추천</td></tr>
+    <tr><td><code>GET /api/menu/{category}</code></td><td><code>korean</code>/<code>chinese</code>/<code>japanese</code>/<code>snack</code> 카테고리별 추천</td></tr>
+    <tr><td><code>GET /api/menu/json/{category}</code></td><td>카테고리별 추천을 JSON(<code>MenuResponse</code>)으로 응답</td></tr>
+  </tbody>
+</table>
+<p><code>MenuService</code> Bean을 <code>MenuController</code>가 생성자 주입으로 사용하는 구조를 학습했습니다.</p>
+</section>
+
+<section class="bigsection">
+<h2>2. 실습과제로 직접 구현한 API (4개)</h2>
+<div class="req">요구사항: 화면의 주황색 버튼 4개가 부르는 주소에 맞춰 Controller/Service에 로직을 직접 작성</div>
+
+<table>
+  <thead><tr><th>과제</th><th>API</th><th>로직</th></tr></thead>
+  <tbody>
+    <tr><td>① 날씨별 추천</td><td><code>GET /api/menu/weather/{weather}</code></td><td><code>sunny</code>/<code>rainy</code>/<code>hot</code>/<code>cold</code> → switch 분기</td></tr>
+    <tr><td>② 기분별 추천</td><td><code>GET /api/menu/mood/{mood}</code></td><td><code>happy</code>/<code>sad</code>/<code>tired</code>/<code>stressed</code> → switch 분기</td></tr>
+    <tr><td>③ 가격대별 추천</td><td><code>GET /api/menu/price/search?min=&amp;max=</code></td><td><code>@RequestParam</code>으로 두 값을 받아 구간별 추천</td></tr>
+    <tr><td>④ 나만의 추천</td><td><code>GET /api/menu/my/{companion}</code></td><td><code>solo</code>/<code>friends</code>/<code>family</code> (같이 먹는 사람 기준, 자유 설계)</td></tr>
+  </tbody>
+</table>
+<p>기존 <code>recommendByCategory</code> / <code>menuByCategory</code>와 동일한 구조(Controller → Service, <code>@PathVariable</code>/<code>@RequestParam</code>, switch 분기)를 그대로 반복 적용해서 만들었습니다.</p>
+</section>
+
+<section class="bigsection">
+<h2>3. 나만의 차별화 포인트 (직접 개선한 부분)</h2>
+<div class="req">과제 안내문: "여기에 자신만의 차별화 포인트를 반영해 보시거나, 자신만의 새로운 아이템으로 반영하셔도 됩니다" — 이 부분을 실제로 반영한 내역</div>
+
+<p>4개 API 구현이라는 최소 요구사항을 채운 뒤, 요구되지 않은 부분까지 스스로 점검하며 아래 5가지를 <strong>직접 찾아서 개선</strong>했습니다. 특히 ①번은 단순 버그 수정이 아니라, "실습 화면이 항상 같은 값만 테스트한다"는 구조적 한계를 발견하고 고친 것이라 가장 신경 쓴 차별화 포인트입니다.</p>
+
+<table>
+  <thead><tr><th>항목</th><th>Before</th><th>After</th></tr></thead>
+  <tbody>
+    <tr><td><strong>① index.html 하드코딩 제거</strong></td><td>버튼이 <code>rainy</code>/<code>happy</code>/<code>min=5000&amp;max=10000</code>/<code>solo</code> 등 고정값 하나만 호출 → 매번 눌러도 같은 결과만 확인 가능</td><td>클릭할 때마다 유효한 값 후보 중 하나를 무작위로 골라 호출 → 반복 클릭만으로 각 API의 switch 분기(4가지 날씨, 4가지 기분 등)를 전부 검증할 수 있는 테스트 화면으로 발전</td></tr>
+    <tr><td>② 가격대별 추천 현실성 수정</td><td>1만원~2만원 구간에 "오마카세" 추천 (비현실적)</td><td>"스테이크 정식"으로 수정 — 실제 가격대에 맞는 메뉴로 개선</td></tr>
+    <tr><td>③ 응답 형식 통일</td><td>기분별 추천만 유독 JSON 응답</td><td>다른 API와 통일성 있게 텍스트 응답으로 변경</td></tr>
+    <tr><td>④ 개발 편의성 패치</td><td><code>bootRun</code> 후 매번 브라우저 직접 열어야 함</td><td>서버가 응답 가능해지는 순간 자동으로 기본 브라우저에서 화면을 열도록 <code>build.gradle</code>에 로직 추가 (macOS <code>open</code> 명령 사용)</td></tr>
+    <tr><td>⑤ 오탈자/띄어쓰기 수정</td><td>날씨별 추천 응답 문구 띄어쓰기 누락</td><td>수정 완료</td></tr>
+  </tbody>
+</table>
+
+<div class="summary">
+  요구사항(4개 API 구현)만 채우고 끝내지 않고, 실제로 화면을 눌러보며 "이 버튼은 항상 같은 값만 부른다", "이 가격대에 이 메뉴는 이상하다" 같은 문제를 스스로 발견해서 고친 부분을 이번 실습의 차별화 포인트로 제출합니다.
+</div>
+</section>
+
+<section class="bigsection">
+<h2>4. Docker 빌드 &amp; 실행 검증</h2>
+<div class="req">요구사항: 프로젝트 루트에 Dockerfile 생성 및 터미널에서 docker build 명령어 사용</div>
+
+<p>멀티스테이지 빌드로 <code>Dockerfile</code>을 작성했습니다 — 1단계(<code>eclipse-temurin:21-jdk</code>)에서 Gradle Wrapper로 <code>bootJar</code>를 실행하고, 2단계(<code>eclipse-temurin:21-jre-alpine</code>)에 결과 jar만 복사해서 최종 이미지 용량을 줄였습니다.</p>
+
+<pre>docker build -t springboot-menu-recommendation .
+docker run -p 8080:8080 springboot-menu-recommendation</pre>
+
+<figure><img src="captures/docker_build.png"><figcaption>docker build 실행 결과 — 18/18 스테이지 전부 FINISHED, 이미지 springboot-menu-recommendation:latest 생성 완료</figcaption></figure>
+<figure><img src="captures/docker_run.png"><figcaption>docker run -p 8080:8080 실행 결과 — Spring Boot 3.5.16, Tomcat 8080 포트 초기화, "Started MenuApplication" 로그로 정상 기동 확인</figcaption></figure>
+<figure><img src="captures/curl_test.png"><figcaption>컨테이너 실행 중 curl로 날씨별/기분별/가격대별/나만의 추천 4개 API 호출 — 전부 정상 응답 확인</figcaption></figure>
+</section>
+
+<section class="bigsection">
+<h2>5. Docker Scout 취약점 개선 (Before / After)</h2>
+<div class="req">Docker Desktop이 이미지를 자동 스캔해 알려준 보안 취약점(CVE)을 원인 분석 후 개선</div>
+
+<p><strong>원인 파악</strong>: 취약점 대부분이 OS 베이스 이미지가 아니라, 지원 종료된 <strong>Spring Boot 3.4.5</strong> 프레임워크 의존성(2025-12-31 OSS 지원 종료)에서 나온다는 것을 확인했습니다.</p>
+
+<p><strong>조치</strong>: ① 베이스 이미지를 <code>eclipse-temurin:21-jre</code> → <code>eclipse-temurin:21-jre-alpine</code>으로 변경, ② Spring Boot 버전을 <code>3.4.5</code> → <code>3.5.16</code>(지원 중)으로 업그레이드</p>
+
+<figure><img src="captures/scout_before.png"><figcaption>[BEFORE] Docker Desktop Images 탭 — Vulnerabilities 58건, 244개 패키지 스캔 (jre 베이스 + Spring Boot 3.4.5)</figcaption></figure>
+<figure><img src="captures/scout_after.png"><figcaption>[AFTER] docker scout quickview 실행 결과 — Health score B(72%), "No fixable critical or high vulnerabilities" 정책 통과</figcaption></figure>
+
+<table>
+  <thead><tr><th>항목</th><th>Before</th><th>After</th></tr></thead>
+  <tbody>
+    <tr><td>Critical</td><td>4</td><td>0</td></tr>
+    <tr><td>High</td><td>22</td><td>2</td></tr>
+    <tr><td>Medium</td><td>27</td><td>8</td></tr>
+    <tr><td>Low</td><td>13</td><td>1</td></tr>
+    <tr><td>Health score</td><td>D (50%)</td><td>B (72%)</td></tr>
+    <tr><td>이미지 용량</td><td>약 141MB</td><td>약 92MB</td></tr>
+  </tbody>
+</table>
+
+<div class="summary">
+  베이스 이미지 교체는 이미지 용량 감소에는 효과가 있었지만, 실질적인 취약점 감소는 <strong>지원 종료된 프레임워크 버전을 최신 버전으로 올리는 것</strong>에서 나왔습니다. 버전 업그레이드 후 6개 API를 재검증해서 정상 동작을 확인했습니다.
+</div>
+</section>
+
+</body>
+</html>
