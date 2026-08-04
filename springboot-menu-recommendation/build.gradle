@@ -34,3 +34,23 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// bootRun으로 서버가 뜨면 자동으로 기본 브라우저에서 열어준다 (macOS 전용, open 명령 사용).
+tasks.named('bootRun') {
+    doFirst {
+        Thread.start {
+            def url = new URL('http://localhost:8080/')
+            for (int i = 0; i < 60; i++) {
+                try {
+                    def connection = url.openConnection()
+                    connection.connectTimeout = 500
+                    connection.responseCode
+                    'open http://localhost:8080'.execute()
+                    return
+                } catch (ignored) {
+                    sleep(500)
+                }
+            }
+        }
+    }
+}
