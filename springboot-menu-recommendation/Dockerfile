@@ -10,8 +10,8 @@ RUN chmod +x gradlew
 COPY src src
 RUN ./gradlew bootJar --no-daemon
 
-# 2단계: 빌드 결과 jar만 담아서 실행하는 경량 이미지
-FROM eclipse-temurin:21-jre
+# 2단계: 빌드 결과 jar만 담아서 실행하는 경량 이미지 (alpine: 포함 패키지가 적어 취약점도 적음)
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 COPY --from=build /app/build/libs/*.jar app.jar
