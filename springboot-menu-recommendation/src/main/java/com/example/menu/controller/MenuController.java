@@ -49,9 +49,9 @@ public class MenuController {
     @GetMapping("/menu/weather/{weather}")
     public String menuByWeather(@PathVariable("weather") String weather) {
         String menu = menuService.recommendByWeather(weather);
-        return weather +  "에 어울리는 메뉴는" + menu + "입니다.";
+        return weather + "에 어울리는 메뉴는 " + menu + "입니다.";
     }
-    
+
 
     @GetMapping("/menu/mood/{mood}")
     public String menuByMood(@PathVariable("mood") String mood) {
