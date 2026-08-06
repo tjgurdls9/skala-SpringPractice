@@ -1,0 +1,35 @@
+package com.skala.stock.controller;
+
+import com.skala.stock.dto.PortfolioDto;
+import com.skala.stock.service.PortfolioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/portfolios")
+@RequiredArgsConstructor
+@Tag(name = "포트폴리오 관리", description = "포트폴리오 조회 API")
+public class PortfolioController {
+
+    private final PortfolioService portfolioService;
+
+    @GetMapping("/user/{userId}")
+    @Operation(summary = "사용자 포트폴리오 조회", description = "특정 사용자의 전체 포트폴리오를 조회합니다")
+    public ResponseEntity<List<PortfolioDto>> getUserPortfolio(@PathVariable Long userId) {
+        List<PortfolioDto> portfolios = portfolioService.getUserPortfolio(userId);
+        return ResponseEntity.ok(portfolios);
+    }
+
+    @GetMapping("/user/{userId}/stock/{stockId}")
+    @Operation(summary = "특정 주식 보유 현황 조회",
+            description = "특정 사용자가 보유한 한 종목의 수량·평균 매수가·평가 손익을 조회합니다")
+    public ResponseEntity<PortfolioDto> getPortfolio(@PathVariable Long userId,
+                                                     @PathVariable Long stockId) {
+        return ResponseEntity.ok(portfolioService.getPortfolio(userId, stockId));
+    }
+}
