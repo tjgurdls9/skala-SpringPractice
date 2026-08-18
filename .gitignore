@@ -3,3 +3,20 @@
 
 # Claude Code (사용자별 로컬 설정)
 .claude/settings.local.json
+
+# Claude Code 워크트리 (로컬 작업본)
+.claude/worktrees/
+
+# Gradle / Java 빌드 산출물
+.gradle/
+**/.gradle/
+build/
+**/build/
+bin/
+**/bin/
+
+# 제출용 압축본 (같은 이름 디렉토리와 중복)
+G013_서혁인.zip
+
+# 다른 과목(sLLM) 강의 자료가 섞여 들어온 것 — skala-sLLM 레포 소관
+sLLM & Fine-Tuning 1일차 실습 서브노트.html

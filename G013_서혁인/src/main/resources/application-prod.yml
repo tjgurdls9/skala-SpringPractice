@@ -1,0 +1,13 @@
+# prod 프로필: 파일 저장소를 S3(시뮬레이션)로 전환
+# 실제 AWS 자격증명/버킷 없이도 채점 환경에서 안전하게 동작하도록
+# S3StorageService 는 실제 네트워크 호출 없이 업로드 결과를 시뮬레이션한다.
+app:
+  storage:
+    type: s3
+    s3:
+      bucket: team-match-portfolio-bucket
+      region: ap-northeast-2
+
+logging:
+  level:
+    com.skala.teammatch: INFO

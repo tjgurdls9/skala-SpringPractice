@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.skala.teammatch.mapper.StatisticsMapper">
+
+    <!-- 가장 수요가 많은 기술 스택 TOP N: 프로젝트별로 붙인 자유 태그를 전체 집계 -->
+    <select id="findTopDemandedTechStacks" resultType="com.skala.teammatch.dto.TechStackDemandDto">
+        SELECT
+            pts.tech_name AS techName,
+            COUNT(*)      AS demandCount
+        FROM project_tech_stacks pts
+        GROUP BY pts.tech_name
+        ORDER BY demandCount DESC, techName ASC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 최다 프로젝트 완료 유저 랭킹 TOP N: COMPLETED 프로젝트에 팀원으로 참여했던 횟수 집계 -->
+    <select id="findTopCompletedUsers" resultType="com.skala.teammatch.dto.UserRankingDto">
+        SELECT
+            m.id       AS memberId,
+            m.nickname AS nickname,
+            COUNT(*)   AS completedCount
+        FROM project_members pm
+        INNER JOIN projects p ON pm.project_id = p.id AND p.status = 'COMPLETED'
+        INNER JOIN members  m ON pm.member_id = m.id
+        GROUP BY m.id, m.nickname
+        ORDER BY completedCount DESC, nickname ASC
+        LIMIT #{limit}
+    </select>
+
+</mapper>
