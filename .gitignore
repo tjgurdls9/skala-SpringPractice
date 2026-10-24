@@ -52,3 +52,13 @@ graphify-out/
 *.sqlite3-*
 *.log
 *.tmp
+
+# SKALA 수업·발표 자료: 로컬에만 둔다
+/springboot-menu-recommendation/실습과제.md
+/springboot-menu-recommendation/보고서.md
+/springboot-menu-recommendation/보고서.pdf
+/springboot-menu-recommendation/보고서.html
+/StockTrading/보고서.html
+/StockTrading2/보고서.html
+/StockTrading2/보고서.pdf
+/G013_서혁인/보고서.html
