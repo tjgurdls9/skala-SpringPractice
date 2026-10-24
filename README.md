@@ -26,7 +26,7 @@ SKALA Spring Boot 백엔드 실습 모음. 기초 예제부터 개인 과제 프
 - **파일 저장** — `StorageService` 인터페이스로 로컬/S3 구현을 프로필에 따라 교체 (`prod`는 실제 AWS 자격증명 없이 동작하는 시뮬레이션)
 - **모니터링** — 커스텀 Actuator 지표 `ActiveProjectHealthIndicator`
 
-동작 화면은 `G013_서혁인/captures/`, 상세 설명은 `보고서.html`에 있습니다.
+동작 화면은 `G013_서혁인/captures/`에 있습니다. 보고서는 저장소에서 내리고 로컬에만 보관합니다.
 
 ## 실행
 
